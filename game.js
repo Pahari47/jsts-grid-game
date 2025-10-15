@@ -65,4 +65,41 @@ export default class Game {
             }
         }
     }
+
+    checkWin() {
+        for(const p of this.players) {
+            if(!p.isEliminated && p.x === this.destination[0] && p.y === this.destination[1]) {
+                console.log(`\n Player ${p.name} wins Game 0${this.id}!\n`);
+                this.isOver = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    async start() {
+        console.log(`\n Game 0${this.id} Turn ${String(this.turn + 1).padStart(3, "0")}:\n`);
+        console.log(this.drawGrid());
+
+        const interval = setInterval(() => {
+            if(this.isOver) {
+                clearInterval(interval);
+                return;
+            }
+            
+            this.turn++;
+            for(const p of this.players) {
+                p.moveToward(...this.destination);
+            }
+
+            this.checkCollisions();
+
+            console.log(`\nGame 0${this.id} Turn ${String(this.turn + 1).padStart(3, "0")}:\n`);
+            console.log(this.drawGrid());
+
+            if(this.checkWin()) {
+                clearInterval(interval);
+            }
+        }, 5000);
+    }
 }
