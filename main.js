@@ -1,5 +1,5 @@
-import Game from "./game.js";
-import Player from "./player.js";
+import Game from './game.js';
+import Player from './player.js';
 
 const game1 = Game.create(3, 4);
 const game2 = Game.create(4, 4);

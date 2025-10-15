@@ -22,8 +22,7 @@ export default class Game {
         while (true) {
             x = Math.floor(Math.random() * this.rows);
             y = Math.floor(Math.random() * this.cols);
-            
-            if(!this.players.some(p => p.x === x && p.y === y)) {
+            if (!this.players.some(p => p.x === x && p.y === y)) {
                 return [x, y];
             }
         }
@@ -36,16 +35,16 @@ export default class Game {
     }
 
     drawGrid() {
-        const grid = Array.from({length: this.rows}, () => 
+        const grid = Array.from({ length: this.rows }, () =>
             Array(this.cols).fill("_")
         );
 
-        for(const p of this.players) {
-            if(!p.isEliminated) grid[p.x][p.y] = p.name;
+        for (const p of this.players) {
+            if (!p.isEliminated) grid[p.x][p.y] = p.name;
         }
 
         const [dx, dy] = this.destination;
-        grid[dx][dy] = "x";
+        grid[dx][dy] = "X";
 
         return grid.map(row => row.join(" ")).join("\n");
     }
@@ -53,10 +52,10 @@ export default class Game {
     checkCollisions() {
         const posMap = new Map();
 
-        for(const p of this.players) {
-            if(p.isEliminated) continue;
+        for (const p of this.players) {
+            if (p.isEliminated) continue;
             const key = `${p.x},${p.y}`;
-            if(posMap.has(key)) {
+            if (posMap.has(key)) {
                 const other = posMap.get(key);
                 p.isEliminated = true;
                 other.isEliminated = true;
@@ -67,8 +66,8 @@ export default class Game {
     }
 
     checkWin() {
-        for(const p of this.players) {
-            if(!p.isEliminated && p.x === this.destination[0] && p.y === this.destination[1]) {
+        for (const p of this.players) {
+            if (!p.isEliminated && p.x === this.destination[0] && p.y === this.destination[1]) {
                 console.log(`\n Player ${p.name} wins Game 0${this.id}!\n`);
                 this.isOver = true;
                 return true;
@@ -78,17 +77,17 @@ export default class Game {
     }
 
     async start() {
-        console.log(`\n Game 0${this.id} Turn ${String(this.turn + 1).padStart(3, "0")}:\n`);
+        console.log(`\nGame 0${this.id} Turn ${String(this.turn + 1).padStart(3, "0")}:\n`);
         console.log(this.drawGrid());
 
         const interval = setInterval(() => {
-            if(this.isOver) {
+            if (this.isOver) {
                 clearInterval(interval);
                 return;
             }
-            
+
             this.turn++;
-            for(const p of this.players) {
+            for (const p of this.players) {
                 p.moveToward(...this.destination);
             }
 
@@ -97,8 +96,15 @@ export default class Game {
             console.log(`\nGame 0${this.id} Turn ${String(this.turn + 1).padStart(3, "0")}:\n`);
             console.log(this.drawGrid());
 
-            if(this.checkWin()) {
+            if (this.checkWin()) {
                 clearInterval(interval);
+            }
+
+            const alivePlayers = this.players.filter(p => !p.isEliminated);
+            if (alivePlayers.length === 0) {
+                console.log(`\n All players eliminated in Game 0${this.id}! Game Over.\n`);
+                clearInterval(interval);
+                this.isOver = true;
             }
         }, 5000);
     }
